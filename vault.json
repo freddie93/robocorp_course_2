@@ -1,6 +1,9 @@
 {
+  "inputParams": {
+	"url": "https://robotsparebinindustries.com/"
+	},
   "credential": {
     "username": "maria",
-    "password": "thoushallnotpass"
+    "password": "thoushallnotpass1"
   }
 }

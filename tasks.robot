@@ -16,23 +16,34 @@ Library     RPA.FileSystem
 
 # +
 *** Variables ****
-${url} =                         https://robotsparebinindustries.com/
-${url_download_input_file} =     https://robotsparebinindustries.com/orders.csv
+#${url} =                         https://robotsparebinindustries.com/
 # -
 
-** Keywords ***
+*** Keywords ***
+Show Input Diaglog
+
+    Add heading    Input download link of Order from RobotSpareBin Industries Inc
+    Add text    Hint: https://robotsparebinindustries.com/orders.csv
+    Add text input    url    label=Download Order URL
+    
+    ${result} =     Run dialog
+    [Return]    ${result.url}
+
+*** Keywords ***
 Open Website
 
     #Populate credential
     ${secretCredential} =     Get Secret    credential
+    ${inputParams} =     Get Secret    inputParams
     
-    Open Chrome Browser    ${url}
+    Open Chrome Browser    ${inputParams}[url]
     Maximize Browser Window
     Wait Until Element Is Visible    id:username    60s
     Click Element   css:li.nav-item:nth-child(2)
 
 *** Keywords ***
 Get Order List
+    [Arguments]     ${url_download_input_file}
 
     Download    ${url_download_input_file}      overwrite=True
     ${orderList}   Read table from CSV    orders.csv   header=True    dialect=excel
@@ -107,9 +118,11 @@ Archive Output PDF File
 
 *** Tasks ***
 Create Robot Receipts from RobotSpareBin Industries Inc
+    ${url_download_input_file} =     Show Input Diaglog
+    
     Open Website
 
-    ${orderList} =    Get Order List
+    ${orderList} =    Get Order List    ${url_download_input_file}
     
     FOR    ${row}    IN    @{orderList}
         Close Popup
